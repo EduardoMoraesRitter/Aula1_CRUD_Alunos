@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import psycopg2
@@ -12,6 +14,15 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 # 2. Criar a instância do FastAPI
 app = FastAPI()
+
+# Configuração do CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite qualquer origem
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos os métodos (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todos os cabeçalhos
+)
 
 # Modelo para o Aluno (os campos que vamos receber via POST)
 class AlunoCreate(BaseModel):
@@ -133,5 +144,10 @@ def atualizar_aluno(aluno_id: int, aluno: AlunoCreate):
 @app.get("/")
 def home():
     return {"message": "API de Alunos - Online!"}
+
+# Rota para acessar a página de CRUD
+@app.get("/home", response_class=HTMLResponse)
+def get_home():
+    return FileResponse("index.html")
 
 # Para rodar: uvicorn main:app --reload

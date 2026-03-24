@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD de Aluno</title>
+</head>
+
+<body>
+    <h1>Gerenciamento de Alunos</h1>
+
+    <!-- Formulário para Criar/Editar -->
+    <div id="formulario">
+        <h2 id="form-titulo">Novo Aluno</h2>
+        <input type="hidden" id="aluno-id">
+        <p>Nome: <input type="text" id="nome"></p>
+        <p>Email: <input type="email" id="email"></p>
+        <p>Nascimento: <input type="date" id="data_nascimento"></p>
+        <button id="btn-salvar" onclick="salvarAluno()">Salvar</button>
+        <button id="btn-cancelar" onclick="limparFormulario()">Cancelar</button>
+    </div>
+
+    <hr>
+
+    <h2>Lista de Alunos</h2>
+    <div id="status">Carregando...</div>
+    <ul id="lista-alunos"></ul>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000/alunos';
+
+        async function buscarAlunos() {
+            const statusDiv = document.getElementById('status');
+            const listaUl = document.getElementById('lista-alunos');
+            try {
+                const response = await fetch(API_URL);
+                const alunos = await response.json();
+                statusDiv.innerText = `Total: ${alunos.length}`;
+                listaUl.innerHTML = '';
+                alunos.forEach(aluno => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <strong>${aluno.nome}</strong> (${aluno.email}) - ${aluno.data_nascimento}
+                        <button onclick='preencherFormulario(${JSON.stringify(aluno)})'>Editar</button>
+                        <button onclick='deletarAluno(${aluno.id})'>Excluir</button>
+                    `;
+                    listaUl.appendChild(li);
+                });
+            } catch (e) {
+                statusDiv.innerText = 'Erro ao carregar.';
+            }
+        }
+
+        async function salvarAluno() {
+            const id = document.getElementById('aluno-id').value;
+            const aluno = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                data_nascimento: document.getElementById('data_nascimento').value
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_URL}/${id}` : API_URL;
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(aluno)
+                });
+                if (response.ok) {
+                    limparFormulario();
+                    buscarAlunos();
+                } else {
+                    alert('Erro ao salvar aluno');
+                }
+            } catch (e) {
+                alert('Erro de conexão');
+            }
+        }
+
+        async function deletarAluno(id) {
+            if (!confirm('Deseja excluir este aluno?')) return;
+            try {
+                const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                if (response.ok) buscarAlunos();
+            } catch (e) {
+                alert('Erro ao deletar');
+            }
+        }
+
+        function preencherFormulario(aluno) {
+            document.getElementById('form-titulo').innerText = 'Editar Aluno';
+            document.getElementById('aluno-id').value = aluno.id;
+            document.getElementById('nome').value = aluno.nome;
+            document.getElementById('email').value = aluno.email;
+            document.getElementById('data_nascimento').value = aluno.data_nascimento;
+            document.getElementById('btn-cancelar').style.display = 'inline';
+        }
+
+        function limparFormulario() {
+            document.getElementById('form-titulo').innerText = 'Novo Aluno';
+            document.getElementById('aluno-id').value = '';
+            document.getElementById('nome').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('data_nascimento').value = '';
+            document.getElementById('btn-cancelar').style.display = 'none';
+        }
+
+        buscarAlunos();
+    </script>
+</body>
+
+</html>
