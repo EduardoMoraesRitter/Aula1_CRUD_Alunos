@@ -1,0 +1,33 @@
+@baseUrl = http://127.0.0.1:8000
+
+### 1. Rota Inicial (Home)
+GET {{baseUrl}}/
+
+### 2. Listar todos os alunos
+GET {{baseUrl}}/alunos
+
+### 3. Criar um novo aluno
+# Note: Altere os dados abaixo conforme necessário
+POST {{baseUrl}}/alunos
+Content-Type: application/json
+
+{
+  "nome": "João Silva",
+  "email": "joao@email.com",
+  "data_nascimento": "2000-01-01"
+}
+
+### 4. Atualizar um aluno pelo ID
+# Note: Substitua o "1" no final da URL pelo ID de um aluno existente
+PUT {{baseUrl}}/alunos/1
+Content-Type: application/json
+
+{
+  "nome": "João Silva Atualizado",
+  "email": "joao_updated@email.com",
+  "data_nascimento": "2000-01-01"
+}
+
+### 5. Deletar um aluno pelo ID
+# Note: Substitua o "1" no final da URL pelo ID de um aluno existente
+DELETE {{baseUrl}}/alunos/1
