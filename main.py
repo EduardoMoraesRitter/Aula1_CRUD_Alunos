@@ -29,6 +29,7 @@ class AlunoCreate(BaseModel):
     nome: str
     email: str
     data_nascimento: str
+    status: bool = True
 
 # 3. Função para conectar ao banco de dados
 def get_db_connection():
@@ -69,8 +70,8 @@ def criar_aluno(aluno: AlunoCreate):
         cur = conn.cursor()
         
         # SQL para inserção
-        sql = "INSERT INTO alunos (nome, email, data_nascimento) VALUES (%s, %s, %s) RETURNING *;"
-        cur.execute(sql, (aluno.nome, aluno.email, aluno.data_nascimento))
+        sql = "INSERT INTO alunos (nome, email, data_nascimento, status) VALUES (%s, %s, %s, %s) RETURNING *;"
+        cur.execute(sql, (aluno.nome, aluno.email, aluno.data_nascimento, aluno.status))
         
         # Salva (commit) as alterações no banco
         novo_aluno = cur.fetchone()
@@ -120,11 +121,11 @@ def atualizar_aluno(aluno_id: int, aluno: AlunoCreate):
         # SQL para atualização (usando RETURNING para confirmar se foi atualizado)
         sql = """
             UPDATE alunos 
-            SET nome = %s, email = %s, data_nascimento = %s 
+            SET nome = %s, email = %s, data_nascimento = %s, status = %s 
             WHERE id = %s 
             RETURNING *;
         """
-        cur.execute(sql, (aluno.nome, aluno.email, aluno.data_nascimento, aluno_id))
+        cur.execute(sql, (aluno.nome, aluno.email, aluno.data_nascimento, aluno.status, aluno_id))
         
         aluno_atualizado = cur.fetchone()
         conn.commit()

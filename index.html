@@ -16,6 +16,7 @@
         <p>Nome: <input type="text" id="nome"></p>
         <p>Email: <input type="email" id="email"></p>
         <p>Nascimento: <input type="date" id="data_nascimento"></p>
+        <p>Ativo: <input type="checkbox" id="status-checkbox" checked></p>
         <button id="btn-salvar" onclick="salvarAluno()">Salvar</button>
         <button id="btn-cancelar" onclick="limparFormulario()">Cancelar</button>
     </div>
@@ -40,7 +41,8 @@
                 alunos.forEach(aluno => {
                     const li = document.createElement('li');
                     li.innerHTML = `
-                        <strong>${aluno.nome}</strong> (${aluno.email}) - ${aluno.data_nascimento}
+                        <strong>${aluno.nome}</strong> (${aluno.email}) - ${aluno.data_nascimento} - 
+                        <span>${aluno.status ? 'Ativo' : 'Inativo'}</span>
                         <button onclick='preencherFormulario(${JSON.stringify(aluno)})'>Editar</button>
                         <button onclick='deletarAluno(${aluno.id})'>Excluir</button>
                     `;
@@ -56,7 +58,8 @@
             const aluno = {
                 nome: document.getElementById('nome').value,
                 email: document.getElementById('email').value,
-                data_nascimento: document.getElementById('data_nascimento').value
+                data_nascimento: document.getElementById('data_nascimento').value,
+                status: document.getElementById('status-checkbox').checked
             };
 
             const method = id ? 'PUT' : 'POST';
@@ -95,6 +98,7 @@
             document.getElementById('nome').value = aluno.nome;
             document.getElementById('email').value = aluno.email;
             document.getElementById('data_nascimento').value = aluno.data_nascimento;
+            document.getElementById('status-checkbox').checked = aluno.status;
             document.getElementById('btn-cancelar').style.display = 'inline';
         }
 
@@ -104,6 +108,7 @@
             document.getElementById('nome').value = '';
             document.getElementById('email').value = '';
             document.getElementById('data_nascimento').value = '';
+            document.getElementById('status-checkbox').checked = true;
             document.getElementById('btn-cancelar').style.display = 'none';
         }
 
